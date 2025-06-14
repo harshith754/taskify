@@ -89,6 +89,18 @@ export interface UpdatesState {
   error: string | null;
 }
 
+export type ItemType = "task" | "bug";
+
+
+export type UnifiedItem = {
+  id: string;
+  status: EntityStatus;
+  priority: Priority;
+  assigneeId: string;
+  endDate?: string;
+  itemType: ItemType;
+};
+
 // export interface TimeLog {
 //   id: string;
 //   parentId: string;

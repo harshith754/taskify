@@ -1,3 +1,4 @@
+"use client";
 
 import {
   SignedIn,
@@ -9,44 +10,84 @@ import {
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ModeToggle";
-import type { FC, JSX } from "react";
+import { Menu } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-export default function Navbar(): JSX.Element {
+export default function Navbar() {
   return (
-    <header className="w-full px-6 py-4 flex justify-between items-center border-b bg-background">
-      <h1 className="text-2xl font-bold text-primary">Taskify</h1>
+    <header className="w-full px-4 py-3 sm:px-6 flex justify-between items-center border-b bg-background">
+      <Link href="/">
+        <h1 className="text-xl sm:text-2xl font-bold text-primary cursor-pointer">
+          Taskify
+        </h1>
+      </Link>
 
-      <div className="flex items-center gap-4">
-        {/* Navigation links when signed in */}
+      {/* Desktop Navigation */}
+      <div className="hidden sm:flex items-center gap-4">
         <SignedIn>
           <Link href="/dashboard">
-            <Button variant="ghost">Dashboard</Button>
+            <Button variant="ghost" size="sm">Dashboard</Button>
           </Link>
           <Link href="/tasks">
-            <Button variant="ghost">Tasks</Button>
+            <Button variant="ghost" size="sm">Tasks</Button>
           </Link>
           <Link href="/bugs">
-            <Button variant="ghost">Bugs</Button>
+            <Button variant="ghost" size="sm">Bugs</Button>
           </Link>
         </SignedIn>
 
-        {/* Auth buttons when signed out */}
         <SignedOut>
           <SignInButton mode="modal">
-            <Button variant="outline">Login</Button>
+            <Button variant="outline" size="sm">Login</Button>
           </SignInButton>
-          <SignUpButton mode="modal" >
-            <Button variant="outline">Sign Up</Button>
+          <SignUpButton mode="modal">
+            <Button variant="outline" size="sm">Sign Up</Button>
           </SignUpButton>
         </SignedOut>
 
-        {/* User menu when signed in */}
         <SignedIn>
           <UserButton afterSignOutUrl="/" />
         </SignedIn>
 
-        {/* Theme toggle button */}
         <ModeToggle />
+      </div>
+
+      {/* Mobile Menu */}
+      <div className="sm:hidden">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-48 mt-2 p-2 space-y-2">
+            <SignedIn>
+              <Link href="/dashboard">
+                <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
+              </Link>
+              <Link href="/tasks">
+                <Button variant="ghost" className="w-full justify-start">Tasks</Button>
+              </Link>
+              <Link href="/bugs">
+                <Button variant="ghost" className="w-full justify-start">Bugs</Button>
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+
+            <SignedOut>
+              <SignInButton mode="modal">
+                <Button variant="outline" className="w-full justify-start">Login</Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button variant="outline" className="w-full justify-start">Sign Up</Button>
+              </SignUpButton>
+            </SignedOut>
+
+            <div className="pt-1 border-t">
+              <ModeToggle />
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </header>
   );

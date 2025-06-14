@@ -19,11 +19,25 @@ import {
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { format, parseISO } from "date-fns";
-import type { EntityStatus, Priority } from "@/types";
+import type { 
+  EntityStatus, 
+  Priority, 
+  Task, 
+  Bug, 
+  Update, 
+  User,
+  UnifiedItem,
+  ItemType
+} from "@/types";
 
 type FilterType = "type" | "status" | "priority";
 
-const TYPES = ["task", "bug"] as const;
+interface ChartDataPoint {
+  date: string;
+  [key: string]: string | number;
+}
+
+const TYPES: ItemType[] = ["task", "bug"];
 const STATUSES: EntityStatus[] = [
   "open",
   "in_progress",
@@ -33,21 +47,35 @@ const STATUSES: EntityStatus[] = [
 const PRIORITIES: Priority[] = ["low", "medium", "high"];
 
 const TaskAndBugAreaCharts = () => {
-  const updates = useSelector((state: RootState) => state.updates);
-  const tasks = useSelector((state: RootState) => state.tasks);
-  const bugs = useSelector((state: RootState) => state.bugs);
-  const users = useSelector((state: RootState) => state.user);
+  const updates = useSelector((state: RootState) => state.updates) as Update[];
+  const tasks = useSelector((state: RootState) => state.tasks) as Task[];
+  const bugs = useSelector((state: RootState) => state.bugs) as Bug[];
+  const users = useSelector((state: RootState) => state.user) as User[];
   const currentUser = users.find((u) => u.isCurrentUser);
 
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("type");
 
-  const allItems = [
-    ...tasks.map((task) => ({ ...task, itemType: "task" as const })),
-    ...bugs.map((bug) => ({ ...bug, itemType: "bug" as const })),
+  const allItems: UnifiedItem[] = [
+    ...tasks.map((task): UnifiedItem => ({ 
+      id: task.id,
+      status: task.status,
+      priority: task.priority,
+      assigneeId: task.assigneeId,
+      endDate: task.endDate,
+      itemType: "task"
+    })),
+    ...bugs.map((bug): UnifiedItem => ({ 
+      id: bug.id,
+      status: bug.status,
+      priority: bug.priority,
+      assigneeId: bug.assigneeId,
+      endDate: bug.endDate,
+      itemType: "bug"
+    })),
   ];
 
-  const initializeGroup = (date: string, filter: FilterType) => {
-    const base: Record<string, any> = { date };
+  const initializeGroup = (date: string, filter: FilterType): ChartDataPoint => {
+    const base: ChartDataPoint = { date };
 
     if (filter === "type") {
       TYPES.forEach((type) => (base[type] = 0));
@@ -61,16 +89,16 @@ const TaskAndBugAreaCharts = () => {
   };
 
   const groupDataByDate = (
-    items: any[],
-    getDate: (item: any) => string | null,
-    getKey: (item: any) => string,
+    items: Update[] | UnifiedItem[],
+    getDate: (item: Update | UnifiedItem) => string | null,
+    getKey: (item: Update | UnifiedItem) => string,
     filter: FilterType,
     userOnly = false
-  ) => {
-    const dateGroups: Record<string, any> = {};
+  ): ChartDataPoint[] => {
+    const dateGroups: Record<string, ChartDataPoint> = {};
 
     items.forEach((item) => {
-      if (userOnly && item.assigneeId !== currentUser?.id) return;
+      if (userOnly && 'assigneeId' in item && item.assigneeId !== currentUser?.id) return;
       const rawDate = getDate(item);
       if (!rawDate) return;
 
@@ -80,8 +108,9 @@ const TaskAndBugAreaCharts = () => {
       }
 
       const key = getKey(item);
-      if (key in dateGroups[date]) {
-        dateGroups[date][key] += 1;
+      if (key && key in dateGroups[date]) {
+        const currentValue = dateGroups[date][key];
+        dateGroups[date][key] = typeof currentValue === 'number' ? currentValue + 1 : 1;
       }
     });
 
@@ -90,12 +119,13 @@ const TaskAndBugAreaCharts = () => {
     );
   };
 
-  const getChartData = () => {
+  const getChartData = (): ChartDataPoint[] => {
     return groupDataByDate(
       updates,
-      (u) => u.createdAt,
+      (u) => (u as Update).createdAt,
       (u) => {
-        const parent = allItems.find((i) => i.id === u.parentId);
+        const update = u as Update;
+        const parent = allItems.find((i) => i.id === update.parentId);
         if (!parent) return "";
         if (selectedFilter === "type") return parent.itemType;
         if (selectedFilter === "status") return parent.status;
@@ -106,14 +136,16 @@ const TaskAndBugAreaCharts = () => {
     );
   };
 
-  const getClosedData = () => {
+  const getClosedData = (): ChartDataPoint[] => {
+    const closedItems = allItems.filter((i) => i.status === "closed" && i.endDate);
     return groupDataByDate(
-      allItems.filter((i) => i.status === "closed" && i.endDate),
-      (i) => i.endDate,
+      closedItems,
+      (i) => (i as UnifiedItem).endDate || null,
       (i) => {
-        if (selectedFilter === "type") return i.itemType;
-        if (selectedFilter === "status") return i.status;
-        if (selectedFilter === "priority") return i.priority;
+        const item = i as UnifiedItem;
+        if (selectedFilter === "type") return item.itemType;
+        if (selectedFilter === "status") return item.status;
+        if (selectedFilter === "priority") return item.priority;
         return "";
       },
       selectedFilter,
@@ -159,14 +191,14 @@ const TaskAndBugAreaCharts = () => {
         key={key}
         dataKey={key}
         type="natural"
-        fill={chartConfig[key].color}
+        fill={chartConfig[key]?.color}
         fillOpacity={0.4}
-        stroke={chartConfig[key].color}
+        stroke={chartConfig[key]?.color}
         stackId="1"
       />
     ));
 
-  const getChartTitle = () => {
+  const getChartTitle = (): string => {
     switch (selectedFilter) {
       case "type":
         return "Updates by Item Type";
@@ -179,7 +211,7 @@ const TaskAndBugAreaCharts = () => {
     }
   };
 
-  const getChartDescription = () => {
+  const getChartDescription = (): string => {
     switch (selectedFilter) {
       case "type":
         return "Daily updates split between tasks and bugs";
@@ -201,11 +233,11 @@ const TaskAndBugAreaCharts = () => {
         </h2>
 
         <div className="flex flex-wrap gap-2">
-          {["type", "status", "priority"].map((f) => (
+          {(["type", "status", "priority"] as const).map((f) => (
             <Button
               key={f}
               variant={selectedFilter === f ? "default" : "outline"}
-              onClick={() => setSelectedFilter(f as FilterType)}
+              onClick={() => setSelectedFilter(f)}
               size="sm"
               className="text-xs sm:text-sm"
             >
@@ -254,7 +286,7 @@ const TaskAndBugAreaCharts = () => {
                     axisLine={false}
                     tickMargin={8}
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) =>
+                    tickFormatter={(value: string) =>
                       new Date(value).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -271,7 +303,7 @@ const TaskAndBugAreaCharts = () => {
                   <ChartTooltip
                     cursor={false}
                     content={<ChartTooltipContent indicator="dot" />}
-                    labelFormatter={(value) =>
+                    labelFormatter={(value: string) =>
                       new Date(value).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
