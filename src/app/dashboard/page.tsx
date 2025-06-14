@@ -14,10 +14,15 @@ const DashboardPage = () => {
   const currentUser = users.find((u) => u.isCurrentUser);
 
   const tasks = useSelector((state: RootState) =>
-    state.tasks.filter((task) => task.assigneeId === currentUser?.id)
+    currentUser?.role === "manager"
+      ? state.tasks
+      : state.tasks.filter((task) => task.assigneeId === currentUser?.id)
   );
+
   const bugs = useSelector((state: RootState) =>
-    state.bugs.filter((bug) => bug.assigneeId === currentUser?.id)
+    currentUser?.role === "manager"
+      ? state.bugs
+      : state.bugs.filter((bug) => bug.assigneeId === currentUser?.id)
   );
 
   return (
@@ -51,7 +56,9 @@ const DashboardPage = () => {
               >
                 <CardContent className="py-0 space-y-1">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-medium text-sm sm:text-base">{task.title}</h3>
+                    <h3 className="font-medium text-sm sm:text-base">
+                      {task.title}
+                    </h3>
                     <Badge variant="outline" className="text-xs capitalize">
                       {task.status}
                     </Badge>
@@ -88,7 +95,9 @@ const DashboardPage = () => {
               >
                 <CardContent className="py-0 space-y-1">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-medium text-sm sm:text-base">{bug.title}</h3>
+                    <h3 className="font-medium text-sm sm:text-base">
+                      {bug.title}
+                    </h3>
                     <Badge
                       variant={
                         bug.severity === "critical"

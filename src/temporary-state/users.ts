@@ -5,7 +5,7 @@ export const users: User[] = [
     id: "u-001",
     name: "Harshith",
     email: "harshith@example.com",
-    role: "developer",
+    role: "manager",
     isCurrentUser: true,
   },
   {
@@ -19,7 +19,7 @@ export const users: User[] = [
     id: "u-003",
     name: "Bob",
     email: "bob@example.com",
-    role: "manager",
+    role: "developer",
     isCurrentUser: false,
   },
 ];

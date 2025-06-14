@@ -19,15 +19,15 @@ import {
 } from "@/components/ui/chart";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { format, parseISO } from "date-fns";
-import type { 
-  EntityStatus, 
-  Priority, 
-  Task, 
-  Bug, 
-  Update, 
+import type {
+  EntityStatus,
+  Priority,
+  Task,
+  Bug,
+  Update,
   User,
   UnifiedItem,
-  ItemType
+  ItemType,
 } from "@/types";
 
 type FilterType = "type" | "status" | "priority";
@@ -48,33 +48,52 @@ const PRIORITIES: Priority[] = ["low", "medium", "high"];
 
 const TaskAndBugAreaCharts = () => {
   const updates = useSelector((state: RootState) => state.updates) as Update[];
-  const tasks = useSelector((state: RootState) => state.tasks) as Task[];
-  const bugs = useSelector((state: RootState) => state.bugs) as Bug[];
   const users = useSelector((state: RootState) => state.user) as User[];
   const currentUser = users.find((u) => u.isCurrentUser);
+
+  const tasks = useSelector((state: RootState) =>
+    currentUser?.role === "manager"
+      ? state.tasks
+      : state.tasks.filter((task) => task.assigneeId === currentUser?.id)
+  );
+
+  const bugs = useSelector((state: RootState) =>
+    currentUser?.role === "manager"
+      ? state.bugs
+      : state.bugs.filter((bug) => bug.assigneeId === currentUser?.id)
+  );
+
+  
 
   const [selectedFilter, setSelectedFilter] = useState<FilterType>("type");
 
   const allItems: UnifiedItem[] = [
-    ...tasks.map((task): UnifiedItem => ({ 
-      id: task.id,
-      status: task.status,
-      priority: task.priority,
-      assigneeId: task.assigneeId,
-      endDate: task.endDate,
-      itemType: "task"
-    })),
-    ...bugs.map((bug): UnifiedItem => ({ 
-      id: bug.id,
-      status: bug.status,
-      priority: bug.priority,
-      assigneeId: bug.assigneeId,
-      endDate: bug.endDate,
-      itemType: "bug"
-    })),
+    ...tasks.map(
+      (task): UnifiedItem => ({
+        id: task.id,
+        status: task.status,
+        priority: task.priority,
+        assigneeId: task.assigneeId,
+        endDate: task.endDate,
+        itemType: "task",
+      })
+    ),
+    ...bugs.map(
+      (bug): UnifiedItem => ({
+        id: bug.id,
+        status: bug.status,
+        priority: bug.priority,
+        assigneeId: bug.assigneeId,
+        endDate: bug.endDate,
+        itemType: "bug",
+      })
+    ),
   ];
 
-  const initializeGroup = (date: string, filter: FilterType): ChartDataPoint => {
+  const initializeGroup = (
+    date: string,
+    filter: FilterType
+  ): ChartDataPoint => {
     const base: ChartDataPoint = { date };
 
     if (filter === "type") {
@@ -98,7 +117,12 @@ const TaskAndBugAreaCharts = () => {
     const dateGroups: Record<string, ChartDataPoint> = {};
 
     items.forEach((item) => {
-      if (userOnly && 'assigneeId' in item && item.assigneeId !== currentUser?.id) return;
+      if (
+        userOnly &&
+        "assigneeId" in item &&
+        item.assigneeId !== currentUser?.id
+      )
+        return;
       const rawDate = getDate(item);
       if (!rawDate) return;
 
@@ -110,7 +134,8 @@ const TaskAndBugAreaCharts = () => {
       const key = getKey(item);
       if (key && key in dateGroups[date]) {
         const currentValue = dateGroups[date][key];
-        dateGroups[date][key] = typeof currentValue === 'number' ? currentValue + 1 : 1;
+        dateGroups[date][key] =
+          typeof currentValue === "number" ? currentValue + 1 : 1;
       }
     });
 
@@ -137,7 +162,9 @@ const TaskAndBugAreaCharts = () => {
   };
 
   const getClosedData = (): ChartDataPoint[] => {
-    const closedItems = allItems.filter((i) => i.status === "closed" && i.endDate);
+    const closedItems = allItems.filter(
+      (i) => i.status === "closed" && i.endDate
+    );
     return groupDataByDate(
       closedItems,
       (i) => (i as UnifiedItem).endDate || null,
