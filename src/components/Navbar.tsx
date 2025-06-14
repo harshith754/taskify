@@ -25,7 +25,7 @@ import {
 
 export default function Navbar() {
   return (
-    <header className="w-full px-4 py-3 sm:px-6 flex justify-between items-center border-b bg-background">
+    <header className="w-full px-0 py-3 sm:px-6 flex justify-between items-center border-b bg-background">
       <Link href="/">
         <h1 className="text-xl sm:text-2xl font-bold text-primary cursor-pointer">
           Taskify
