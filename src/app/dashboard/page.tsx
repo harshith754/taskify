@@ -49,7 +49,7 @@ const DashboardPage = () => {
           <p className="text-muted-foreground text-sm">No tasks assigned.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tasks.map((task) => (
+            {tasks.slice(0,3).map((task) => (
               <Card
                 key={task.id}
                 className="hover:shadow-md transition-shadow duration-200"
@@ -88,7 +88,7 @@ const DashboardPage = () => {
           <p className="text-muted-foreground text-sm">No bugs assigned.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {bugs.map((bug) => (
+            {bugs.slice(0,3).map((bug) => (
               <Card
                 key={bug.id}
                 className="hover:shadow-md transition-shadow duration-200"
