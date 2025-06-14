@@ -36,10 +36,10 @@ const DashboardPage = () => {
       <TaskAndBugAreaCharts />
       {/* Tasks Section */}
       <section>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
+        <div className="flex flex-row items-center justify-between mb-3 gap-2">
           <h2 className="text-lg sm:text-xl font-semibold">Your Tasks</h2>
           <Link href="/tasks">
-            <Button variant="outline" className="w-full sm:w-auto text-sm">
+            <Button variant="outline" className="w-auto text-xs sm:text-sm">
               View All Tasks
             </Button>
           </Link>
@@ -75,10 +75,10 @@ const DashboardPage = () => {
 
       {/* Bugs Section */}
       <section>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
+        <div className="flex flex-row items-center justify-between mb-3 gap-2">
           <h2 className="text-lg sm:text-xl font-semibold">Your Bugs</h2>
           <Link href="/bugs">
-            <Button variant="outline" className="w-full sm:w-auto text-sm">
+            <Button variant="outline" className="w-auto text-xs sm:text-sm">
               View All Bugs
             </Button>
           </Link>
