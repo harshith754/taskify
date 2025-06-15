@@ -51,12 +51,12 @@ const DashboardPage = () => {
           <p className="text-muted-foreground text-sm">No tasks assigned.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tasks.slice(0,3).map((task) => (
+            {tasks.slice(0, 3).map((task) => (
               <Card
                 key={task.id}
                 className="hover:shadow-md transition-shadow duration-200 cursor-pointer"
-                onClick= {()=>{
-                  router.push(`/tasks/${task.id}`)
+                onClick={() => {
+                  router.push(`/tasks/${task.id}`);
                 }}
               >
                 <CardContent className="py-0 space-y-1">
@@ -93,12 +93,12 @@ const DashboardPage = () => {
           <p className="text-muted-foreground text-sm">No bugs assigned.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {bugs.slice(0,3).map((bug) => (
+            {bugs.slice(0, 3).map((bug) => (
               <Card
                 key={bug.id}
-                className="hover:shadow-md transition-shadow duration-200"
-                 onClick= {()=>{
-                  router.push(`/bugs/${bug.id}`)
+                className="hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                onClick={() => {
+                  router.push(`/bugs/${bug.id}`);
                 }}
               >
                 <CardContent className="py-0 space-y-1">
