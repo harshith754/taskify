@@ -7,11 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import UserTaskChart from "@/components/taskcharts/UserTaskChart";
 import UserPriorityChart from "@/components/taskcharts/UserPriorityChart";
 import TaskFiltersAndTable from "@/components/TaskFiltersAndTable";
-import {
-  ClipboardList,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
+import { ClipboardList, Clock, CheckCircle, Plus } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const TasksPage = () => {
   const users = useSelector((state: RootState) => state.user);
@@ -29,7 +27,7 @@ const TasksPage = () => {
   const completedTasks = tasks.filter((task) => task.status === "closed");
 
   return (
-    <div className="px-4 sm:px-6 md:px-8 py-6 max-w-7xl mx-auto space-y-6">
+    <div className="relative px-4 sm:px-6 md:px-8 py-6 max-w-7xl mx-auto space-y-6">
       <h1 className="text-xl sm:text-2xl font-bold text-primary tracking-tight">
         Task Dashboard
       </h1>
@@ -81,6 +79,12 @@ const TasksPage = () => {
 
       {/* Table & Filters */}
       <TaskFiltersAndTable />
+
+      <Link href="/tasks/add" className="fixed bottom-6 right-6">
+        <Button className="rounded-full h-12 w-12 p-0 shadow-lg" size="icon">
+          <Plus className="w-8 h-8" />
+        </Button>
+      </Link>
     </div>
   );
 };

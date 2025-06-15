@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
-import { toast } from "sonner";
+import { addBug } from "@/slices/bugSlice";
+import { EntityStatus, Priority } from "@/types";
 import {
   Card,
   CardHeader,
@@ -20,85 +22,72 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import {
-  Bug,
+  Bug as BugIcon,
   AlignLeft,
   ListChecks,
   Flame,
   UserRound,
   Plus,
 } from "lucide-react";
-import { EntityStatus, Priority } from "@/types";
-import { addTask } from "@/slices/taskSlice";
+import { nanoid } from "@reduxjs/toolkit";
 
-const AddTaskForm = () => {
+const AddBugPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const users = useSelector((state: RootState) => state.user);
+  const currentUser = users.find((u) => u.isCurrentUser);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState<Priority>("low");
   const [status, setStatus] = useState<EntityStatus>("open");
-  const [priority, setPriority] = useState<Priority>("medium");
-  const [assigneeId, setAssigneeId] = useState<string>(users[0]?.id ?? "");
-  const [creating, setCreating] = useState(false);
 
-  const handleCreate = async () => {
+  const handleAddBug = () => {
     if (!title.trim()) {
-      toast("Title is required");
+      toast("Bug title is required");
       return;
     }
 
-    setCreating(true);
-
-    const newTask = {
+    const newBug = {
+      id: `b-${nanoid(4)}`,
       title,
       description,
       status,
       priority,
-      assigneeId,
       createdAt: new Date().toISOString(),
-      itemType: "task",
+      assigneeId: currentUser?.id || "",
+      updates: [],
     };
 
-    try {
-      await dispatch(addTask(newTask));
-      toast("Task created successfully");
-      setTitle("");
-      setDescription("");
-      setStatus("open");
-      setPriority("medium");
-      setAssigneeId(users[0]?.id ?? "");
-    } catch (err) {
-      toast("Failed to create task");
-    } finally {
-      setCreating(false);
-    }
+    dispatch(addBug(newBug));
+    toast("Bug added successfully");
+    router.push("/bugs");
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
+    <div className="max-w-2xl mx-auto px-4 py-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Create New Task</CardTitle>
+          <CardTitle className="text-lg">Add New Bug</CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4 border-t pt-4">
-          {/* Title */}
+        <CardContent className="space-y-4">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-              <Bug className="w-3 h-3" />
+            <p className="text-xs font-medium flex items-center gap-1 text-muted-foreground">
+              <BugIcon className="w-3 h-3" />
               Title
             </p>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter task title"
+              placeholder="Enter bug title"
             />
           </div>
 
-          {/* Description */}
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+            <p className="text-xs font-medium flex items-center gap-1 text-muted-foreground">
               <AlignLeft className="w-3 h-3" />
               Description
             </p>
@@ -106,23 +95,22 @@ const AddTaskForm = () => {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Task details..."
+              placeholder="Enter bug description"
             />
           </div>
 
-          {/* Status & Priority */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+              <p className="text-xs font-medium flex items-center gap-1 text-muted-foreground">
                 <ListChecks className="w-3 h-3" />
                 Status
               </p>
               <Select
                 value={status}
-                onValueChange={(val) => setStatus(val as EntityStatus)}
+                onValueChange={(value) => setStatus(value as EntityStatus)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="open">Open</SelectItem>
@@ -133,16 +121,16 @@ const AddTaskForm = () => {
             </div>
 
             <div className="space-y-1">
-              <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+              <p className="text-xs font-medium flex items-center gap-1 text-muted-foreground">
                 <Flame className="w-3 h-3" />
                 Priority
               </p>
               <Select
                 value={priority}
-                onValueChange={(val) => setPriority(val as Priority)}
+                onValueChange={(value) => setPriority(value as Priority)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Priority" />
+                  <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">Low</SelectItem>
@@ -153,38 +141,18 @@ const AddTaskForm = () => {
             </div>
           </div>
 
-          {/* Assignee */}
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+          <div>
+            <p className="text-xs font-medium flex items-center gap-1 text-muted-foreground">
               <UserRound className="w-3 h-3" />
-              Assign to
+              Assigned To
             </p>
-            <Select
-              value={assigneeId}
-              onValueChange={(val) => setAssigneeId(val)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Assignee" />
-              </SelectTrigger>
-              <SelectContent>
-                {users.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <p className="text-sm">{currentUser?.name ?? "Unassigned"}</p>
           </div>
 
-          {/* Submit Button */}
           <div className="pt-2">
-            <Button
-              onClick={handleCreate}
-              disabled={creating}
-              className="w-full sm:w-auto"
-            >
+            <Button onClick={handleAddBug} className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
-              {creating ? "Creating..." : "Create Task"}
+              Add Bug
             </Button>
           </div>
         </CardContent>
@@ -193,4 +161,4 @@ const AddTaskForm = () => {
   );
 };
 
-export default AddTaskForm;
+export default AddBugPage;

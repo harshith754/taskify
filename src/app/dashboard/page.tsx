@@ -97,6 +97,9 @@ const DashboardPage = () => {
               <Card
                 key={bug.id}
                 className="hover:shadow-md transition-shadow duration-200"
+                 onClick= {()=>{
+                  router.push(`/bugs/${bug.id}`)
+                }}
               >
                 <CardContent className="py-0 space-y-1">
                   <div className="flex justify-between items-center">

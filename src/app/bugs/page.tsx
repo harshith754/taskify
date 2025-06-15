@@ -10,9 +10,12 @@ import {
   BugIcon,
   AlertTriangle,
   CheckCircle2,
+  Plus,
 } from "lucide-react";
 import BugFiltersAndTable from "@/components/BugFiltersAndTable";
 import UserBugChart from "@/components/bugcharts/UserBugChart";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 
 
@@ -90,6 +93,12 @@ const BugsPage = () => {
 
       {/* Table & Filters */}
       <BugFiltersAndTable />
+      
+      <Link href="/bugs/add" className="fixed bottom-6 right-6">
+        <Button className="rounded-full h-12 w-12 p-0 shadow-lg" size="icon">
+          <Plus className="w-8 h-8" />
+        </Button>
+      </Link>
     </div>
   );
 };
