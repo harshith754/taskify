@@ -130,7 +130,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const UserBugChart: React.FC<Props> = ({ user, bugs }) => {
-  const { chartData, comparison } = getChartData(bugs);
+  const { chartData } = getChartData(bugs);
   const priorityStats = getPriorityStats(bugs);
 
   const firstName = user.name.split(" ")[0];
@@ -141,7 +141,7 @@ const UserBugChart: React.FC<Props> = ({ user, bugs }) => {
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm sm:text-md font-semibold flex items-center gap-2">
             <BugIcon className="h-5 w-5 text-muted-foreground" />
-            {firstName}'s Bug Resolution
+            {firstName}&apos;s Bug Resolution
           </CardTitle>
         </div>
       </CardHeader>

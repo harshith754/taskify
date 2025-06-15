@@ -124,10 +124,9 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 const UserTaskChart: React.FC<Props> = ({ user, tasks }) => {
-  const { chartData, comparison } = getChartData(tasks);
+  const { chartData} = getChartData(tasks);
   const priorityStats = getPriorityStats(tasks);
 
-  const totalCompleted = tasks.filter((task) => task.endDate).length;
 
   const firstName = user.name.split(" ")[0];
 
@@ -137,7 +136,7 @@ const UserTaskChart: React.FC<Props> = ({ user, tasks }) => {
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm sm:text-md font-semibold flex items-center gap-2">
             <CheckSquare className="h-5 w-5 text-muted-foreground" />
-            {firstName}'s Tasks
+            {firstName}&apos;s Tasks
           </CardTitle>
         </div>
       </CardHeader>
