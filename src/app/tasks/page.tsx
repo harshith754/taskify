@@ -8,6 +8,7 @@ import TaskFiltersAndTable from "@/components/TaskFiltersAndTable";
 import { ClipboardList, Clock, CheckCircle, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import TimeSpentChart from "@/components/taskcharts/TimeSpentChart";
 
 const TasksPage = () => {
   const users = useSelector((state: RootState) => state.user);
@@ -72,8 +73,12 @@ const TasksPage = () => {
         )}
       </div>
 
+      <TimeSpentChart />
+
       {/* Table & Filters */}
       <TaskFiltersAndTable />
+
+
 
       <Link href="/tasks/add" className="fixed bottom-6 right-6">
         <Button className="rounded-full h-12 w-12 p-0 shadow-lg" size="icon">

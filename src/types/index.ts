@@ -31,18 +31,10 @@ export interface Task {
   endDate?: string;
   updates: string[];
   timeSpent: number;
+  isTracking?: boolean;
+  trackingStartedAt?: number;
 }
 
-export interface TasksState {
-  tasks: Task[];
-  loading: boolean;
-  error: string | null;
-  filter: {
-    status?: EntityStatus;
-    priority?: Priority;
-    assigneeId?: string;
-  };
-}
 
 // Bug
 export interface Bug {
@@ -63,17 +55,6 @@ export interface Bug {
   timeSpent: number;
 }
 
-export interface BugsState {
-  bugs: Bug[];
-  loading: boolean;
-  error: string | null;
-  filter: {
-    status?: EntityStatus;
-    impact?: Impact;
-    assigneeId?: string;
-  };
-}
-
 export interface Update {
   id: string;
   parentId: string;
@@ -83,14 +64,8 @@ export interface Update {
   createdAt: string;
 }
 
-export interface UpdatesState {
-  updates: Update[];
-  loading: boolean;
-  error: string | null;
-}
 
 export type ItemType = "task" | "bug";
-
 
 export type UnifiedItem = {
   id: string;
@@ -100,27 +75,3 @@ export type UnifiedItem = {
   endDate?: string;
   itemType: ItemType;
 };
-
-// export interface TimeLog {
-//   id: string;
-//   parentId: string;
-//   type: 'task' | 'bug';
-//   userId: string;
-//   minutes: number;
-//   loggedAt: string;
-// }
-
-// export interface TimeTrackingState {
-//   logs: TimeLog[];
-//   loading: boolean;
-//   error: string | null;
-// }
-
-// export interface UiState {
-//   selectedTaskId: string | null;
-//   selectedBugId: string | null;
-//   activeTab: 'tasks' | 'bugs';
-//   showModal: boolean;
-//   modalType: 'edit' | 'create' | 'view' | null;
-//   theme: 'light' | 'dark' | 'system';
-// }

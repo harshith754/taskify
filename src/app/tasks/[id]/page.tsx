@@ -1,11 +1,15 @@
-// Same imports as before
 "use client";
 
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -18,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { updateTask } from "@/slices/taskSlice";
 import { toast } from "sonner";
-import { EntityStatus } from "@/types";
+import { EntityStatus, Priority } from "@/types";
 import {
   Edit3,
   Save,
@@ -28,6 +32,8 @@ import {
   ListChecks,
   Flame,
   UserRound,
+  Timer,
+  TimerReset,
 } from "lucide-react";
 
 const TaskDetailsPage = () => {
@@ -43,13 +49,31 @@ const TaskDetailsPage = () => {
   const [title, setTitle] = useState(task?.title ?? "");
   const [description, setDescription] = useState(task?.description ?? "");
   const [status, setStatus] = useState<EntityStatus>(task?.status ?? "open");
-  const [priority, setPriority] = useState<"low" | "medium" | "high">(
-    task?.priority ?? "low"
-  );
+  const [priority, setPriority] = useState<Priority>(task?.priority ?? "low");
   const [updateText, setUpdateText] = useState("");
   const [saving, setSaving] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const [trackingStartedAt, setTrackingStartedAt] = useState<number | null>(
+    task?.trackingStartedAt ?? null
+  );
+  const [elapsedTime, setElapsedTime] = useState(0);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (trackingStartedAt) {
+      interval = setInterval(() => {
+        const diffMinutes = (Date.now() - trackingStartedAt) / 60000;
+        setElapsedTime(diffMinutes);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [trackingStartedAt]);
 
   if (!task) return <div className="p-4">Task not found.</div>;
 
@@ -99,6 +123,30 @@ const TaskDetailsPage = () => {
     }, 500);
   };
 
+  const handleStartTracking = () => {
+    const now = Date.now();
+    setTrackingStartedAt(now);
+    toast("Started time tracking...");
+  };
+
+  const handleStopTracking = () => {
+    if (!trackingStartedAt) return;
+
+    const newTimeSpent = task.timeSpent + elapsedTime;
+    setTrackingStartedAt(null);
+    setElapsedTime(0);
+
+    dispatch(
+      updateTask({
+        ...task,
+        timeSpent: newTimeSpent,
+        trackingStartedAt: null,
+      })
+    );
+
+    toast(`Time tracking stopped. Total time: ${newTimeSpent.toFixed(1)} mins`);
+  };
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 max-w-6xl mx-auto px-4 py-6">
       {/* Task Details */}
@@ -106,7 +154,6 @@ const TaskDetailsPage = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-0">
             <CardTitle className="text-base sm:text-lg">Task Details</CardTitle>
-
             <Button
               variant="outline"
               size="sm"
@@ -118,15 +165,13 @@ const TaskDetailsPage = () => {
           </CardHeader>
 
           <CardContent className="space-y-4 border-t pt-4">
-            {/* Task ID */}
+            {/* ID */}
             <div>
               <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
                 <Hash className="w-3 h-3" />
                 Task ID
               </p>
-              <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">
-                {task.id}
-              </p>
+              <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">{task.id}</p>
             </div>
 
             {/* Title */}
@@ -136,14 +181,9 @@ const TaskDetailsPage = () => {
                 Title
               </p>
               {isEditing ? (
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} />
               ) : (
-                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">
-                  {title}
-                </p>
+                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">{title}</p>
               )}
             </div>
 
@@ -160,9 +200,7 @@ const TaskDetailsPage = () => {
                   onChange={(e) => setDescription(e.target.value)}
                 />
               ) : (
-                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">
-                  {description}
-                </p>
+                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">{description}</p>
               )}
             </div>
 
@@ -187,9 +225,7 @@ const TaskDetailsPage = () => {
                   </SelectContent>
                 </Select>
               ) : (
-                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">
-                  {status.replace("_", " ")}
-                </p>
+                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">{status.replace("_", " ")}</p>
               )}
             </div>
 
@@ -202,9 +238,7 @@ const TaskDetailsPage = () => {
               {isEditing ? (
                 <Select
                   value={priority}
-                  onValueChange={(value) =>
-                    setPriority(value as "low" | "medium" | "high")
-                  }
+                  onValueChange={(value) => setPriority(value as "low" | "medium" | "high")}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Priority" />
@@ -227,20 +261,14 @@ const TaskDetailsPage = () => {
                   <UserRound className="w-3 h-3" />
                   Assigned To
                 </p>
-                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">
-                  {user.name}
-                </p>
+                <p className="text-sm bg-muted rounded-md px-3 py-2 capitalize">{user.name}</p>
               </div>
             )}
 
             {/* Save Button */}
             {isEditing && (
               <div className="pt-2">
-                <Button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="w-full sm:w-auto"
-                >
+                <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
                   <Save className="w-4 h-4 mr-2" />
                   {saving ? "Saving..." : "Save Changes"}
                 </Button>
@@ -250,23 +278,44 @@ const TaskDetailsPage = () => {
         </Card>
       </div>
 
-      {/* Updates Section */}
-      <div className="w-full lg:max-w-md">
+      {/* Time Tracking + Updates Section */}
+      <div className="w-full lg:max-w-md space-y-4">
+        {/* Time Tracking */}
         <Card>
           <CardHeader className="pb-0">
-            <CardTitle className="text-base sm:text-lg pb-0">
-              Task Updates
-            </CardTitle>
+            <CardTitle className="text-base sm:text-lg pb-0">Time Tracking</CardTitle>
           </CardHeader>
+          <CardContent className="space-y-4 border-t pt-4">
+            <p className="text-sm text-muted-foreground">
+              Time Spent:{" "}
+              <span className="font-semibold">
+                {(task.timeSpent + (trackingStartedAt ? elapsedTime : 0)).toFixed(1)} mins
+              </span>
+            </p>
+            {trackingStartedAt ? (
+              <Button onClick={handleStopTracking} variant="destructive">
+                <TimerReset className="w-4 h-4 mr-2" />
+                Stop Tracking
+              </Button>
+            ) : (
+              <Button onClick={handleStartTracking}>
+                <Timer className="w-4 h-4 mr-2" />
+                Start Tracking
+              </Button>
+            )}
+          </CardContent>
+        </Card>
 
+        {/* Updates */}
+        <Card>
+          <CardHeader className="pb-0">
+            <CardTitle className="text-base sm:text-lg pb-0">Task Updates</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4 border-t pt-4">
             <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
               {task.updates?.length > 0 ? (
                 task.updates.map((update, idx) => (
-                  <div
-                    key={idx}
-                    className="text-sm p-2 border rounded-md bg-muted"
-                  >
+                  <div key={idx} className="text-sm p-2 border rounded-md bg-muted">
                     {update}
                   </div>
                 ))
@@ -277,20 +326,14 @@ const TaskDetailsPage = () => {
 
             {/* Add Update */}
             <div className="space-y-1 pt-2">
-              <p className="text-xs text-muted-foreground font-medium">
-                New Update
-              </p>
+              <p className="text-xs text-muted-foreground font-medium">New Update</p>
               <Textarea
                 rows={3}
                 value={updateText}
                 onChange={(e) => setUpdateText(e.target.value)}
                 placeholder="Write an update..."
               />
-              <Button
-                onClick={handleUpdateSubmit}
-                className="mt-2"
-                disabled={updating}
-              >
+              <Button onClick={handleUpdateSubmit} className="mt-2" disabled={updating}>
                 <PlusCircle className="w-4 h-4 mr-2" />
                 {updating ? "Adding..." : "Add Update"}
               </Button>
