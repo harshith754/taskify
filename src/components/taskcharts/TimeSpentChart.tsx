@@ -20,13 +20,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Clock, Users, BarChart3 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 
 type UserTaskTime = {
   userName: string;
@@ -67,8 +61,8 @@ const TimeSpentChart = () => {
   const users = useSelector((state: RootState) => state.user);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "totalTime">("totalTime");
-  const [maxTasks, setMaxTasks] = useState<number>(10);
+  const [sortBy] = useState<"name" | "totalTime">("totalTime");
+  const [maxTasks] = useState<number>(10);
 
   const processedData = useMemo(() => {
     const userTaskMap: Record<string, UserTaskTime> = {};
