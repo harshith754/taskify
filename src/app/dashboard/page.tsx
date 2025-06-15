@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import TaskAndBugAreaCharts from "@/components/TaskAndBugsAreaChart";
+import { useRouter } from "next/navigation";
 
 const DashboardPage = () => {
   const users = useSelector((state: RootState) => state.user);
@@ -25,6 +26,7 @@ const DashboardPage = () => {
       : state.bugs.filter((bug) => bug.assigneeId === currentUser?.id)
   );
 
+  const router = useRouter();
   return (
     <div className="px-4 sm:px-6 md:px-8 py-6 max-w-7xl mx-auto space-y-5">
       <div className="space-y-1">
@@ -52,7 +54,10 @@ const DashboardPage = () => {
             {tasks.slice(0,3).map((task) => (
               <Card
                 key={task.id}
-                className="hover:shadow-md transition-shadow duration-200"
+                className="hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                onClick= {()=>{
+                  router.push(`/tasks/${task.id}`)
+                }}
               >
                 <CardContent className="py-0 space-y-1">
                   <div className="flex justify-between items-center">
