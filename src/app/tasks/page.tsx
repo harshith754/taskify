@@ -4,7 +4,6 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import UserTaskChart from "@/components/taskcharts/UserTaskChart";
-import UserPriorityChart from "@/components/taskcharts/UserPriorityChart";
 import TaskFiltersAndTable from "@/components/TaskFiltersAndTable";
 import { ClipboardList, Clock, CheckCircle, Plus } from "lucide-react";
 import Link from "next/link";
@@ -68,9 +67,6 @@ const TasksPage = () => {
           <>
             <div className="px-2 w-full sm:w-1/2 xl:w-1/3 mb-4">
               <UserTaskChart tasks={tasks} user={currentUser!} />
-            </div>
-            <div className="px-2 w-full sm:w-1/2 xl:w-1/3 mb-4">
-              <UserPriorityChart tasks={tasks} user={currentUser!} />
             </div>
           </>
         )}
