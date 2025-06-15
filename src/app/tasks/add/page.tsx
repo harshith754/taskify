@@ -68,7 +68,7 @@ const AddTaskForm = () => {
       setStatus("open");
       setPriority("medium");
       setAssigneeId(users[0]?.id ?? "");
-    } catch (err) {
+    } catch {
       toast("Failed to create task");
     } finally {
       setCreating(false);

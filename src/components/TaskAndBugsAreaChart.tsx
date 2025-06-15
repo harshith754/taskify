@@ -22,8 +22,6 @@ import { format, parseISO } from "date-fns";
 import type {
   EntityStatus,
   Priority,
-  Task,
-  Bug,
   Update,
   User,
   UnifiedItem,

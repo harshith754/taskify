@@ -61,7 +61,7 @@ const UserBugChart: React.FC<Props> = ({ user, bugs }) => {
       <Card className="h-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium">
-            {user.name.split(" ")[0]}'s Bug Summary
+            {user.name.split(" ")[0]}&apos;Summary
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[180px] sm:h-[200px]">

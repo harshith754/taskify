@@ -61,7 +61,7 @@ const UserTaskChart: React.FC<Props> = ({ user, tasks }) => {
       <Card className="h-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium">
-            {user.name.split(" ")[0]}'s Task Summary
+            {user.name.split(" ")[0]}&apos;s Task Summary
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[180px] sm:h-[200px]">

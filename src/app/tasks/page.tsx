@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { Badge } from "@/components/ui/badge";
 import UserTaskChart from "@/components/taskcharts/UserTaskChart";
 import UserPriorityChart from "@/components/taskcharts/UserPriorityChart";
 import TaskFiltersAndTable from "@/components/TaskFiltersAndTable";

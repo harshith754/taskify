@@ -40,7 +40,7 @@ const UserPriorityChart: React.FC<Props> = ({ user, tasks }) => {
       <Card className="h-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium">
-            {user.name.split(" ")[0]}'s Task Priority
+            {user.name.split(" ")[0]}&apos;s Task Priority
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[180px] sm:h-[200px]">

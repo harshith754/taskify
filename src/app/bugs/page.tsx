@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import {
   Bug,
+  User,
 } from "@/types";
 import {
   BugIcon,
@@ -19,7 +20,7 @@ import { Button } from "@/components/ui/button";
 
 
 
-const UserSeverityChart = ({ user, bugs }: { user: any; bugs: Bug[] }) => (
+const UserSeverityChart = ({ user, }: { user: User; bugs: Bug[] }) => (
   <div className="bg-muted rounded-md h-60 flex items-center justify-center text-sm text-muted-foreground">
     Severity Chart for {user.name}
   </div>
