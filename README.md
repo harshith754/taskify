@@ -2,6 +2,7 @@
 
 A fully responsive, feature-rich bug/task tracker built with **Next.js**, **Redux**, **Clerk**, and **ShadCN UI**. This application allows developers and managers to collaborate efficiently on task/bug tracking, closure workflows, and time management — all with clean UI, light/dark mode support, and insightful charts.
 
+🔗 [👉 Visit the Live App](https://taskify-peach-zeta.vercel.app)
 ---
 
 ## 🔥 Features
