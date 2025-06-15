@@ -15,8 +15,8 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col gap-0">
-      <main className="flex-1 flex flex-col items-center justify-center px-2 sm:px-6 lg:px-8 py-10 text-center">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-10 text-center">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl lg:mt-5 font-bold tracking-tight text-primary mb-6">
             Track Tasks. Fix Bugs. Stay Productive.
