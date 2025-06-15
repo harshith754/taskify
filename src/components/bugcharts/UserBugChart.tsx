@@ -4,8 +4,6 @@ import type React from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -16,7 +14,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
-import { TrendingUp, TrendingDown, BugIcon } from "lucide-react";
+import { BugIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Bug {

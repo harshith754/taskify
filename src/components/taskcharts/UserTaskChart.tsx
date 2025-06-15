@@ -1,13 +1,7 @@
 "use client";
 
 import type React from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   type ChartConfig,
   ChartContainer,
@@ -15,7 +9,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
-import { TrendingUp, TrendingDown, CheckSquare } from "lucide-react";
+import { CheckSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Task {
